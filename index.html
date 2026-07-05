@@ -1,4 +1,4 @@
-<title>解耦执行</title>
+<title>解耦执行 / unstuck</title>
 <style>
   :root {
     --bg: #EAEDE9;
@@ -65,10 +65,16 @@
     flex-direction: column;
     gap: 20px;
   }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   .dots {
     display: flex;
     gap: 8px;
     justify-content: center;
+    flex: 1;
   }
   .dot {
     width: 8px;
@@ -79,6 +85,20 @@
   }
   .dot.active { background: var(--accent-calm); }
   .dot.done { background: var(--accent-action); }
+  .lang-toggle {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink-muted);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .lang-toggle:hover { border-color: var(--accent-calm); color: var(--accent-calm); }
+  .lang-toggle:focus-visible { outline: 2px solid var(--accent-calm); outline-offset: 2px; }
   .step { display: none; flex-direction: column; gap: 16px; }
   .step.active { display: flex; }
   h1 {
@@ -167,58 +187,125 @@
 </style>
 
 <div class="card">
-  <div class="dots" id="dots"></div>
+  <div class="topbar">
+    <div class="dots" id="dots"></div>
+    <button class="lang-toggle" id="langToggle" type="button">EN</button>
+  </div>
 
   <div class="step active" data-step="1">
-    <h1>你现在感觉到的具体情绪是什么？</h1>
-    <p class="hint">越具体越好——不是"不好"，是哪一种不好。</p>
+    <h1 data-i18n="s1Title"></h1>
+    <p class="hint" data-i18n="s1Hint"></p>
     <div class="chips" id="emotionChips"></div>
-    <input type="text" id="emotionInput" placeholder="我感到……" />
-    <button class="primary" data-next="2">下一步</button>
+    <input type="text" id="emotionInput" data-i18n-placeholder="s1Placeholder" />
+    <button class="primary" data-next="2" data-i18n="next"></button>
   </div>
 
   <div class="step" data-step="2">
-    <h1>这个情绪最想让你做什么？反过来你会做什么？</h1>
-    <p class="hint">先说逃避冲动，再说和它相反的动作。</p>
-    <input type="text" id="urgeInput" placeholder="它想让我……" />
-    <input type="text" id="oppositeInput" placeholder="反过来，我会……" />
-    <button class="primary" data-next="3">下一步</button>
+    <h1 data-i18n="s2Title"></h1>
+    <p class="hint" data-i18n="s2Hint"></p>
+    <input type="text" id="urgeInput" data-i18n-placeholder="s2UrgePlaceholder" />
+    <input type="text" id="oppositeInput" data-i18n-placeholder="s2OppositePlaceholder" />
+    <button class="primary" data-next="3" data-i18n="next"></button>
   </div>
 
   <div class="step" data-step="3">
-    <h1>压缩成一个两分钟内能开始的最小动作</h1>
-    <p class="hint">小到不能再小的第一步。写下来，然后可以按开始计时。</p>
-    <input type="text" id="actionInput" placeholder="两分钟内我会……" />
+    <h1 data-i18n="s3Title"></h1>
+    <p class="hint" data-i18n="s3Hint"></p>
+    <input type="text" id="actionInput" data-i18n-placeholder="s3Placeholder" />
     <div class="timer" id="timerDisplay">2:00</div>
-    <button class="primary" id="timerBtn">开始两分钟</button>
-    <button class="primary" data-next="4">下一步</button>
+    <button class="primary" id="timerBtn" data-i18n="startTimer"></button>
+    <button class="primary" data-next="4" data-i18n="next"></button>
   </div>
 
   <div class="step" data-step="4">
-    <h1>用"我选择"确认</h1>
-    <p class="hint">不需要保证做到，只需要说出这句话。</p>
-    <input type="text" id="chooseInput" placeholder="我选择现在……" />
-    <p class="hint">你现在会执行吗？</p>
+    <h1 data-i18n="s4Title"></h1>
+    <p class="hint" data-i18n="s4Hint"></p>
+    <input type="text" id="chooseInput" data-i18n-placeholder="s4Placeholder" />
+    <p class="hint" data-i18n="s4HintExec"></p>
     <div class="chips">
-      <button class="chip" data-exec="是">会</button>
-      <button class="chip" data-exec="稍后">稍后</button>
-      <button class="chip" data-exec="不确定">不确定</button>
+      <button class="chip" data-exec="是" data-i18n="execYes"></button>
+      <button class="chip" data-exec="稍后" data-i18n="execLater"></button>
+      <button class="chip" data-exec="不确定" data-i18n="execUnsure"></button>
     </div>
-    <button class="primary" data-next="5">完成，去记录</button>
+    <button class="primary" data-next="5" data-i18n="finish"></button>
   </div>
 
   <div class="step" data-step="5">
-    <h1>记录已保存在本机</h1>
-    <p class="hint">回到电脑后，把下面这行复制粘贴进 raw.md：</p>
+    <h1 data-i18n="s5Title"></h1>
+    <p class="hint" data-i18n="s5Hint"></p>
     <div class="summary-box" id="summaryBox"></div>
     <div class="copied" id="copiedMsg"></div>
-    <button class="primary" id="copyBtn">复制</button>
-    <button class="primary" id="restartBtn">再来一次</button>
+    <button class="primary" id="copyBtn" data-i18n="copy"></button>
+    <button class="primary" id="restartBtn" data-i18n="restart"></button>
   </div>
 </div>
 
 <script>
 (function () {
+  var i18n = {
+    zh: {
+      langToggle: "EN",
+      s1Title: "你现在感觉到的具体情绪是什么？",
+      s1Hint: "越具体越好——不是“不好”，是哪一种不好。",
+      s1Placeholder: "我感到……",
+      s2Title: "这个情绪最想让你做什么？反过来你会做什么？",
+      s2Hint: "先说逃避冲动，再说和它相反的动作。",
+      s2UrgePlaceholder: "它想让我……",
+      s2OppositePlaceholder: "反过来，我会……",
+      s3Title: "压缩成一个两分钟内能开始的最小动作",
+      s3Hint: "小到不能再小的第一步。写下来，然后可以按开始计时。",
+      s3Placeholder: "两分钟内我会……",
+      startTimer: "开始两分钟",
+      s4Title: "用“我选择”确认",
+      s4Hint: "不需要保证做到，只需要说出这句话。",
+      s4Placeholder: "我选择现在……",
+      s4HintExec: "你现在会执行吗？",
+      execYes: "会",
+      execLater: "稍后",
+      execUnsure: "不确定",
+      s5Title: "记录已保存在本机",
+      s5Hint: "回到电脑后，把下面这行复制粘贴进 raw.md：",
+      copy: "复制",
+      copied: "已复制",
+      restart: "再来一次",
+      next: "下一步",
+      finish: "完成，去记录",
+      emotionWords: ["羞耻", "恐惧", "烦躁", "无力", "愤怒", "麻木", "委屈", "自我怀疑"],
+      emotionPrefix: "我感到"
+    },
+    en: {
+      langToggle: "中",
+      s1Title: "What emotion are you feeling right now, specifically?",
+      s1Hint: "The more specific, the better — not just “bad,” but which kind.",
+      s1Placeholder: "I feel...",
+      s2Title: "What does this emotion want you to do? What's the opposite?",
+      s2Hint: "Name the urge first, then the opposite action.",
+      s2UrgePlaceholder: "It wants me to...",
+      s2OppositePlaceholder: "Instead, I will...",
+      s3Title: "Compress it into the smallest action you can start in two minutes",
+      s3Hint: "The smallest possible first step. Write it down, then start the timer if you like.",
+      s3Placeholder: "In two minutes I will...",
+      startTimer: "Start 2 minutes",
+      s4Title: "Confirm with “I choose”",
+      s4Hint: "No promise needed — just say it.",
+      s4Placeholder: "I choose to...",
+      s4HintExec: "Will you do it now?",
+      execYes: "Yes",
+      execLater: "Later",
+      execUnsure: "Not sure",
+      s5Title: "Saved on this device",
+      s5Hint: "Back at your computer, paste this line into your log:",
+      copy: "Copy",
+      copied: "Copied",
+      restart: "Start over",
+      next: "Next",
+      finish: "Done, save it",
+      emotionWords: ["Shame", "Fear", "Restless", "Drained", "Anger", "Numb", "Wronged", "Self-doubt"],
+      emotionPrefix: "I feel "
+    }
+  };
+
+  var lang = localStorage.getItem("unstuckLang") || "zh";
   var state = { emotion: "", urge: "", opposite: "", action: "", choose: "", exec: "稍后" };
   var totalSteps = 5;
   var timerInterval = null;
@@ -232,19 +319,43 @@
     dotsEl.appendChild(d);
   }
 
-  var emotionWords = ["羞耻", "恐惧", "烦躁", "无力", "愤怒", "麻木", "委屈", "自我怀疑"];
-  var chipsEl = document.getElementById("emotionChips");
-  emotionWords.forEach(function (w) {
-    var b = document.createElement("button");
-    b.className = "chip";
-    b.type = "button";
-    b.textContent = w;
-    b.addEventListener("click", function () {
-      var input = document.getElementById("emotionInput");
-      input.value = input.value ? input.value + " " + w : "我感到" + w;
-      input.focus();
+  function applyLanguage() {
+    var dict = i18n[lang];
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var key = el.dataset.i18n;
+      if (dict[key] !== undefined) el.textContent = dict[key];
     });
-    chipsEl.appendChild(b);
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+      var key = el.dataset.i18nPlaceholder;
+      if (dict[key] !== undefined) el.placeholder = dict[key];
+    });
+    document.getElementById("langToggle").textContent = dict.langToggle;
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+    renderEmotionChips();
+  }
+
+  function renderEmotionChips() {
+    var dict = i18n[lang];
+    var chipsEl = document.getElementById("emotionChips");
+    chipsEl.innerHTML = "";
+    dict.emotionWords.forEach(function (w) {
+      var b = document.createElement("button");
+      b.className = "chip";
+      b.type = "button";
+      b.textContent = w;
+      b.addEventListener("click", function () {
+        var input = document.getElementById("emotionInput");
+        input.value = input.value ? input.value + " " + w : dict.emotionPrefix + w;
+        input.focus();
+      });
+      chipsEl.appendChild(b);
+    });
+  }
+
+  document.getElementById("langToggle").addEventListener("click", function () {
+    lang = lang === "zh" ? "en" : "zh";
+    localStorage.setItem("unstuckLang", lang);
+    applyLanguage();
   });
 
   function showStep(n) {
@@ -320,7 +431,7 @@
     var text = document.getElementById("summaryBox").textContent;
     var msg = document.getElementById("copiedMsg");
     function showCopied() {
-      msg.textContent = "已复制";
+      msg.textContent = i18n[lang].copied;
       setTimeout(function () { msg.textContent = ""; }, 2000);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -359,5 +470,7 @@
     });
     showStep(1);
   });
+
+  applyLanguage();
 })();
 </script>
